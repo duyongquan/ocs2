@@ -47,31 +47,31 @@ PinocchioSphereInterface::PinocchioSphereInterface(const PinocchioInterface& pin
     : geometryModelPtr_(new pinocchio::GeometryModel), collisionLinks_(std::move(collisionLinks)) {
   buildGeomFromPinocchioInterface(pinocchioInterface, *geometryModelPtr_);
 
-  for (size_t i = 0; i < collisionLinks_.size(); i++) {
-    const auto& link = collisionLinks_[i];
-    for (size_t j = 0; j < geometryModelPtr_->geometryObjects.size(); ++j) {
-      const pinocchio::GeometryObject& object = geometryModelPtr_->geometryObjects[j];
-      const std::string parentFrameName = pinocchioInterface.getModel().frames[object.parentFrame].name;
-      if (parentFrameName == link) {
-        sphereApproximations_.emplace_back(*object.geometry, j, maxExcesses[i], shrinkRatio);
-        collisionLinkOfEachPrimitiveShape_.emplace_back(link);
-      }
-    }
-  }
+  // for (size_t i = 0; i < collisionLinks_.size(); i++) {
+  //   const auto& link = collisionLinks_[i];
+  //   for (size_t j = 0; j < geometryModelPtr_->geometryObjects.size(); ++j) {
+  //     const pinocchio::GeometryObject& object = geometryModelPtr_->geometryObjects[j];
+  //     const std::string parentFrameName = pinocchioInterface.getModel().frames[object.parentFrame].name;
+  //     if (parentFrameName == link) {
+  //       sphereApproximations_.emplace_back(*object.geometry, j, maxExcesses[i], shrinkRatio);
+  //       collisionLinkOfEachPrimitiveShape_.emplace_back(link);
+  //     }
+  //   }
+  // }
 
-  numPrimitiveShapes_ = sphereApproximations_.size();
-  numSpheres_.reserve(numPrimitiveShapes_);
-  geomObjIds_.reserve(numPrimitiveShapes_);
-  for (const auto& sphereApprox : sphereApproximations_) {
-    const size_t numSpheres = sphereApprox.getNumSpheres();
-    numSpheresInTotal_ += numSpheres;
-    numSpheres_.emplace_back(numSpheres);
-    geomObjIds_.emplace_back(sphereApprox.getGeomObjId());
+  // numPrimitiveShapes_ = sphereApproximations_.size();
+  // numSpheres_.reserve(numPrimitiveShapes_);
+  // geomObjIds_.reserve(numPrimitiveShapes_);
+  // for (const auto& sphereApprox : sphereApproximations_) {
+  //   const size_t numSpheres = sphereApprox.getNumSpheres();
+  //   numSpheresInTotal_ += numSpheres;
+  //   numSpheres_.emplace_back(numSpheres);
+  //   geomObjIds_.emplace_back(sphereApprox.getGeomObjId());
 
-    for (size_t j = 0; j < numSpheres; j++) {
-      sphereRadii_.push_back(sphereApprox.getSphereRadius());
-    }
-  }
+  //   for (size_t j = 0; j < numSpheres; j++) {
+  //     sphereRadii_.push_back(sphereApprox.getSphereRadius());
+  //   }
+  // }
 }
 
 /******************************************************************************************************/

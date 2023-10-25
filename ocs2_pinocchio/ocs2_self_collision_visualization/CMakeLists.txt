@@ -14,7 +14,7 @@ find_package(visualization_msgs REQUIRED)
 find_package(ocs2_core REQUIRED)
 find_package(ocs2_robotic_tools REQUIRED)
 find_package(ocs2_pinocchio_interface REQUIRED)
-# find_package(ocs2_ros_interfaces REQUIRED)
+find_package(ocs2_ros_interfaces REQUIRED)
 find_package(ocs2_self_collision REQUIRED)
 
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
@@ -56,7 +56,7 @@ set(dependencies
   ocs2_core
   ocs2_robotic_tools
   ocs2_pinocchio_interface
-  # ocs2_ros_interfaces
+  ocs2_ros_interfaces
   ocs2_self_collision
 )
 
