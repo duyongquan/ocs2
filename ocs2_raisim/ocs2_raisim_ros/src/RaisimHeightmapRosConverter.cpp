@@ -29,6 +29,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "ocs2_raisim_ros/RaisimHeightmapRosConverter.h"
 
+#include "rclcpp/wait_for_message.hpp"
+
 namespace ocs2 {
 
 RaisimHeightmapRosConverter::RaisimHeightmapRosConverter() : rclcpp::Node("raisim_heightmap_ros_converter")
@@ -96,10 +98,14 @@ void RaisimHeightmapRosConverter::publishGridmap(const raisim::HeightMap& height
   gridmapPublisher_->publish(*gridMapMsg);
 }
 
-std::pair<std::unique_ptr<raisim::HeightMap>, grid_map_msgs::GridMap::ConstPtr> RaisimHeightmapRosConverter::getHeightmapFromRos(
-    double timeout) 
-{
-  return {gridMapMsg ? convertGridmapToHeightmap(gridMapMsg) : nullptr, gridMapMsg};
-}
+// std::pair<std::unique_ptr<raisim::HeightMap>, grid_map_msgs::msg::GridMap::ConstPtr> RaisimHeightmapRosConverter::getHeightmapFromRos(
+//     double timeout) 
+// {
+//   grid_map_msgs::msg::GridMap::SharedPtr gridMapMsg(new grid_map_msgs::msg::GridMap());
+  
+//   bool wait = rclcpp::wait_for_message(*gridMapMsg, this, "/raisim_heightmap", 3);
+
+//   return {wait ? convertGridmapToHeightmap(gridMapMsg) : nullptr, gridMapMsg};
+// }
 
 }  // namespace ocs2

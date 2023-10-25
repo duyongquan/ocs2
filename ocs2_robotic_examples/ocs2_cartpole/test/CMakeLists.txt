@@ -1,0 +1,2 @@
+ament_add_gtest(test_cartpole testCartpole.cpp)
+target_link_libraries(test_cartpole ocs2_cartpole)

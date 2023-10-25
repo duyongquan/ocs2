@@ -78,7 +78,7 @@ class RaisimHeightmapRosConverter : public rclcpp::Node
    * @param[in] timeout Maximum waiting time if no message is received
    * @return The received raisim heightmap and GridMap (or both nullptr if no message was received before the timeout)
    */
-  static std::pair<std::unique_ptr<raisim::HeightMap>, grid_map_msgs::msg::GridMap::ConstPtr> getHeightmapFromRos(double timeout = 5.0);
+  // std::pair<std::unique_ptr<raisim::HeightMap>, grid_map_msgs::msg::GridMap::ConstPtr> getHeightmapFromRos(double timeout = 5.0);
 
 private:
   rclcpp::Publisher<grid_map_msgs::msg::GridMap>::SharedPtr gridmapPublisher_{nullptr};
