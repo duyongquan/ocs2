@@ -11,13 +11,17 @@
 
   <exec_depend>ocs2_core</exec_depend>
   <exec_depend>ocs2_ddp</exec_depend> 
-  <exec_depend>ocs2_frank_wolfe</exec_depend>
+  <exec_depend>ocs2_frank_wolfe</exec_depend> 
+  <!-- <exec_depend>ocs2_ipm</exec_depend>  -->
   <exec_depend>ocs2_msgs</exec_depend> 
   <exec_depend>ocs2_mpc</exec_depend> 
   <exec_depend>ocs2_oc</exec_depend>
-  <exec_depend>ocs2_ocs2</exec_depend> 
-  <exec_depend>ocs2_robotic_tools</exec_depend> 
+  <exec_depend>ocs2_ocs2</exec_depend>
+  <exec_depend>ocs2_perceptive</exec_depend>
+  <exec_depend>ocs2_robotic_tools</exec_depend>
+  <!-- <exec_depend>ocs2_ros_interfaces</exec_depend> -->
   <exec_depend>ocs2_slp</exec_depend>
+  <!-- <exec_depend>ocs2_sqp</exec_depend>  -->
   <exec_depend>ocs2_qp_solver</exec_depend> 
   <exec_depend>ocs2_thirdparty</exec_depend>
   
