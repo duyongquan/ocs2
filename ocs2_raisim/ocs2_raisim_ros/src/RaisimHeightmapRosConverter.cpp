@@ -27,77 +27,79 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
 
-#include "rclcpp/rclcpp.hpp"
-
 #include "ocs2_raisim_ros/RaisimHeightmapRosConverter.h"
 
 namespace ocs2 {
 
-// grid_map_msgs::msg::GridMapPtr RaisimHeightmapRosConverter::convertHeightmapToGridmap(const raisim::HeightMap& heightMap,
-//                                                                                  const std::string& frameId) {
-//   grid_map_msgs::msg::GridMapPtr gridMapMsg(new grid_map_msgs::msg::GridMap());
+RaisimHeightmapRosConverter::RaisimHeightmapRosConverter() : rclcpp::Node("raisim_heightmap_ros_converter")
+{
+  gridmapPublisher_ = this->create_publisher<grid_map_msgs::msg::GridMap>(
+    "/raisim_heightmap", 1);
+}
 
-//   // gridMapMsg->info.header.frame_id = frameId;
-//   // gridMapMsg->info.header.stamp = ros::Time::now();
+ grid_map_msgs::msg::GridMap::SharedPtr RaisimHeightmapRosConverter::convertHeightmapToGridmap(
+    const raisim::HeightMap& heightMap, const std::string& frameId) 
+{
+  grid_map_msgs::msg::GridMap::SharedPtr gridMapMsg(new grid_map_msgs::msg::GridMap());
 
-//   // const auto xResolution = heightMap.getXSize() / static_cast<double>(heightMap.getXSamples());
-//   // const auto yResolution = heightMap.getYSize() / static_cast<double>(heightMap.getYSamples());
-//   // if (std::abs(xResolution - yResolution) > 1e-9) {
-//   //   throw std::runtime_error("RaisimHeightmapRosConverter::convertHeightmapToGridmap - Resolution in x and y must be identical");
-//   // }
-//   // gridMapMsg->info.resolution = xResolution;
+  const auto xResolution = heightMap.getXSize() / static_cast<double>(heightMap.getXSamples());
+  const auto yResolution = heightMap.getYSize() / static_cast<double>(heightMap.getYSamples());
+  if (std::abs(xResolution - yResolution) > 1e-9) {
+    throw std::runtime_error("RaisimHeightmapRosConverter::convertHeightmapToGridmap - Resolution in x and y must be identical");
+  }
+  gridMapMsg->info.resolution = xResolution;
 
-//   // gridMapMsg->info.length_x = heightMap.getXSize();
-//   // gridMapMsg->info.length_y = heightMap.getYSize();
+  gridMapMsg->info.length_x = heightMap.getXSize();
+  gridMapMsg->info.length_y = heightMap.getYSize();
 
-//   // gridMapMsg->info.pose.position.x = heightMap.getCenterX();
-//   // gridMapMsg->info.pose.position.y = heightMap.getCenterY();
-//   // gridMapMsg->info.pose.orientation.w = 1.0;
+  gridMapMsg->info.pose.position.x = heightMap.getCenterX();
+  gridMapMsg->info.pose.position.y = heightMap.getCenterY();
+  gridMapMsg->info.pose.orientation.w = 1.0;
 
-//   // gridMapMsg->layers.emplace_back("elevation");
-//   // std_msgs::Float32MultiArray dataArray;
-//   // dataArray.layout.dim.resize(2);
-//   // dataArray.layout.dim[0].label = "column_index";
-//   // dataArray.layout.dim[0].stride = heightMap.getHeightVector().size();
-//   // dataArray.layout.dim[0].size = heightMap.getXSamples();
-//   // dataArray.layout.dim[1].label = "row_index";
-//   // dataArray.layout.dim[1].stride = heightMap.getYSamples();
-//   // dataArray.layout.dim[1].size = heightMap.getYSamples();
-//   // dataArray.data.insert(dataArray.data.begin(), heightMap.getHeightVector().rbegin(), heightMap.getHeightVector().rend());
-//   // gridMapMsg->data.push_back(dataArray);
+  gridMapMsg->layers.emplace_back("elevation");
+  std_msgs::msg::Float32MultiArray dataArray;
+  dataArray.layout.dim.resize(2);
+  dataArray.layout.dim[0].label = "column_index";
+  dataArray.layout.dim[0].stride = heightMap.getHeightVector().size();
+  dataArray.layout.dim[0].size = heightMap.getXSamples();
+  dataArray.layout.dim[1].label = "row_index";
+  dataArray.layout.dim[1].stride = heightMap.getYSamples();
+  dataArray.layout.dim[1].size = heightMap.getYSamples();
+  dataArray.data.insert(dataArray.data.begin(), heightMap.getHeightVector().rbegin(), heightMap.getHeightVector().rend());
+  gridMapMsg->data.push_back(dataArray);
 
-//   return gridMapMsg;
-// }
+  return gridMapMsg;
+}
 
-// std::unique_ptr<raisim::HeightMap> RaisimHeightmapRosConverter::convertGridmapToHeightmap(const grid_map_msgs::GridMapConstPtr& gridMap) {
-//   if (gridMap->data[0].layout.dim[0].label != "column_index" or gridMap->data[0].layout.dim[1].label != "row_index") {
-//     throw std::runtime_error("RaisimHeightmapRosConverter::convertGridmapToHeightmap - Layout of gridMap currently not supported");
-//   }
+std::unique_ptr<raisim::HeightMap> RaisimHeightmapRosConverter::convertGridmapToHeightmap(
+  const grid_map_msgs::msg::GridMap::ConstPtr& gridMap) 
+{
+  if (gridMap->data[0].layout.dim[0].label != "column_index" or gridMap->data[0].layout.dim[1].label != "row_index") {
+    throw std::runtime_error("RaisimHeightmapRosConverter::convertGridmapToHeightmap - Layout of gridMap currently not supported");
+  }
 
-//   const int xSamples = gridMap->data[0].layout.dim[0].size;
-//   const int ySamples = gridMap->data[0].layout.dim[1].size;
-//   const double xSize = gridMap->info.length_x;
-//   const double ySize = gridMap->info.length_y;
-//   const double centerX = gridMap->info.pose.position.x;
-//   const double centerY = gridMap->info.pose.position.y;
+  const int xSamples = gridMap->data[0].layout.dim[0].size;
+  const int ySamples = gridMap->data[0].layout.dim[1].size;
+  const double xSize = gridMap->info.length_x;
+  const double ySize = gridMap->info.length_y;
+  const double centerX = gridMap->info.pose.position.x;
+  const double centerY = gridMap->info.pose.position.y;
 
-//   std::vector<double> height(gridMap->data[0].data.rbegin(), gridMap->data[0].data.rend());
+  std::vector<double> height(gridMap->data[0].data.rbegin(), gridMap->data[0].data.rend());
 
-//   return std::make_unique<raisim::HeightMap>(xSamples, ySamples, xSize, ySize, centerX, centerY, height);
-// }
+  return std::make_unique<raisim::HeightMap>(xSamples, ySamples, xSize, ySize, centerX, centerY, height);
+}
 
-// void RaisimHeightmapRosConverter::publishGridmap(const raisim::HeightMap& heightMap, const std::string& frameId) {
-//   // if (!gridmapPublisher_) {
-//   //   gridmapPublisher_.reset(new ros::Publisher(nodeHandle_.advertise<grid_map_msgs::GridMap>("/raisim_heightmap", 1, true)));
-//   // }
-//   // auto gridMapMsg = convertHeightmapToGridmap(heightMap, frameId);
-//   // gridmapPublisher_->publish(gridMapMsg);
-// }
+void RaisimHeightmapRosConverter::publishGridmap(const raisim::HeightMap& heightMap, const std::string& frameId) 
+{
+  auto gridMapMsg = convertHeightmapToGridmap(heightMap, frameId);
+  gridmapPublisher_->publish(*gridMapMsg);
+}
 
-// std::pair<std::unique_ptr<raisim::HeightMap>, grid_map_msgs::GridMapConstPtr> RaisimHeightmapRosConverter::getHeightmapFromRos(
-//     double timeout) {
-//   auto gridMapMsg = ros::topic::waitForMessage<grid_map_msgs::GridMap>("/raisim_heightmap", ros::Duration(timeout));
-//   return {gridMapMsg ? convertGridmapToHeightmap(gridMapMsg) : nullptr, gridMapMsg};
-// }
+std::pair<std::unique_ptr<raisim::HeightMap>, grid_map_msgs::GridMap::ConstPtr> RaisimHeightmapRosConverter::getHeightmapFromRos(
+    double timeout) 
+{
+  return {gridMapMsg ? convertGridmapToHeightmap(gridMapMsg) : nullptr, gridMapMsg};
+}
 
 }  // namespace ocs2
