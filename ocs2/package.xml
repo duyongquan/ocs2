@@ -14,7 +14,8 @@
   <exec_depend>ocs2_msgs</exec_depend> 
   <exec_depend>ocs2_mpc</exec_depend> 
   <exec_depend>ocs2_oc</exec_depend>
-  <exec_depend>ocs2_ocs2</exec_depend>
+  <exec_depend>ocs2_ocs2</exec_depend> 
+  <exec_depend>ocs2_qp_solver</exec_depend> 
   <exec_depend>ocs2_thirdparty</exec_depend>
   
   
