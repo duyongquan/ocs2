@@ -48,21 +48,21 @@ RosReferenceManager::RosReferenceManager(std::string topicPrefix, std::shared_pt
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-void RosReferenceManager::subscribe(ros::NodeHandle& nodeHandle) {
-  // ModeSchedule
-  auto modeScheduleCallback = [this](const ocs2_msgs::mode_schedule::ConstPtr& msg) {
-    auto modeSchedule = ros_msg_conversions::readModeScheduleMsg(*msg);
-    referenceManagerPtr_->setModeSchedule(std::move(modeSchedule));
-  };
-  modeScheduleSubscriber_ = nodeHandle.subscribe<ocs2_msgs::mode_schedule>(topicPrefix_ + "_mode_schedule", 1, modeScheduleCallback);
+void RosReferenceManager::subscribe(rclcpp::Node& nodeHandle) {
+  // // ModeSchedule
+  // auto modeScheduleCallback = [this](const ocs2_msgs::mode_schedule::ConstPtr& msg) {
+  //   auto modeSchedule = ros_msg_conversions::readModeScheduleMsg(*msg);
+  //   referenceManagerPtr_->setModeSchedule(std::move(modeSchedule));
+  // };
+  // modeScheduleSubscriber_ = nodeHandle.subscribe<ocs2_msgs::mode_schedule>(topicPrefix_ + "_mode_schedule", 1, modeScheduleCallback);
 
-  // TargetTrajectories
-  auto targetTrajectoriesCallback = [this](const ocs2_msgs::mpc_target_trajectories::ConstPtr& msg) {
-    auto targetTrajectories = ros_msg_conversions::readTargetTrajectoriesMsg(*msg);
-    referenceManagerPtr_->setTargetTrajectories(std::move(targetTrajectories));
-  };
-  targetTrajectoriesSubscriber_ =
-      nodeHandle.subscribe<ocs2_msgs::mpc_target_trajectories>(topicPrefix_ + "_mpc_target", 1, targetTrajectoriesCallback);
+  // // TargetTrajectories
+  // auto targetTrajectoriesCallback = [this](const ocs2_msgs::mpc_target_trajectories::ConstPtr& msg) {
+  //   auto targetTrajectories = ros_msg_conversions::readTargetTrajectoriesMsg(*msg);
+  //   referenceManagerPtr_->setTargetTrajectories(std::move(targetTrajectories));
+  // };
+  // targetTrajectoriesSubscriber_ =
+  //     nodeHandle.subscribe<ocs2_msgs::mpc_target_trajectories>(topicPrefix_ + "_mpc_target", 1, targetTrajectoriesCallback);
 }
 
 }  // namespace ocs2

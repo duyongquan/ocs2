@@ -33,8 +33,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <memory>
 #include <mutex>
 
-#include <interactive_markers/interactive_marker_server.h>
-#include <interactive_markers/menu_handler.h>
+#include <interactive_markers/interactive_marker_server.hpp>
+#include <interactive_markers/menu_handler.hpp>
 
 #include <ocs2_mpc/SystemObservation.h>
 #include <ocs2_ros_interfaces/command/TargetTrajectoriesRosPublisher.h>
@@ -57,17 +57,20 @@ class TargetTrajectoriesInteractiveMarker final {
    * observation is be expected on "topicPrefix_mpc_observation" topic.
    * @param [in] gaolPoseToTargetTrajectories: A function which transforms the commanded pose to TargetTrajectories.
    */
-  TargetTrajectoriesInteractiveMarker(::ros::NodeHandle& nodeHandle, const std::string& topicPrefix,
-                                      GaolPoseToTargetTrajectories gaolPoseToTargetTrajectories);
+  // TargetTrajectoriesInteractiveMarker(rclcpp::Node& nodeHandle, const std::string& topicPrefix,
+  //                                     GaolPoseToTargetTrajectories gaolPoseToTargetTrajectories);
 
   /**
    * Spins ROS to update the interactive markers.
    */
-  void publishInteractiveMarker() { ::ros::spin(); }
+  void publishInteractiveMarker() 
+  { 
+    // ::ros::spin(); 
+  }
 
  private:
-  visualization_msgs::InteractiveMarker createInteractiveMarker() const;
-  void processFeedback(const visualization_msgs::InteractiveMarkerFeedbackConstPtr& feedback);
+  visualization_msgs::msg::InteractiveMarker createInteractiveMarker() const;
+  void processFeedback(const visualization_msgs::msg::InteractiveMarkerFeedback::ConstPtr& feedback);
 
   interactive_markers::MenuHandler menuHandler_;
   interactive_markers::InteractiveMarkerServer server_;
@@ -76,7 +79,7 @@ class TargetTrajectoriesInteractiveMarker final {
 
   std::unique_ptr<TargetTrajectoriesRosPublisher> targetTrajectoriesPublisherPtr_;
 
-  ::ros::Subscriber observationSubscriber_;
+  // ::ros::Subscriber observationSubscriber_;
   mutable std::mutex latestObservationMutex_;
   SystemObservation latestObservation_;
 };

@@ -71,13 +71,13 @@ class RosReferenceManager final : public ReferenceManagerDecorator {
    * (1) ModeSchedule : The predefined mode schedule for time-triggered hybrid systems.
    * (2) TargetTrajectories : The commanded TargetTrajectories.
    */
-  void subscribe(ros::NodeHandle& nodeHandle);
+  void subscribe(rclcpp::Node& nodeHandle);
 
  private:
   const std::string topicPrefix_;
 
-  ::ros::Subscriber modeScheduleSubscriber_;
-  ::ros::Subscriber targetTrajectoriesSubscriber_;
+  // ::ros::Subscriber modeScheduleSubscriber_;
+  // ::ros::Subscriber targetTrajectoriesSubscriber_;
 };
 
 /******************************************************************************************************/

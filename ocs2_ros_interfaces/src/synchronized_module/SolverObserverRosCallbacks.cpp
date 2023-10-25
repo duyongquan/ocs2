@@ -38,7 +38,7 @@ namespace ros {
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-SolverObserver::constraint_callback_t createConstraintCallback(::ros::NodeHandle& nodeHandle, const scalar_array_t& observingTimePoints,
+SolverObserver::constraint_callback_t createConstraintCallback(rclcpp::Node& nodeHandle, const scalar_array_t& observingTimePoints,
                                                                const std::vector<std::string>& topicNames,
                                                                CallbackInterpolationStrategy interpolationStrategy) {
   using vector_ref_array_t = std::vector<std::reference_wrapper<const vector_t>>;
@@ -47,10 +47,10 @@ SolverObserver::constraint_callback_t createConstraintCallback(::ros::NodeHandle
     throw std::runtime_error("[createConstraintCallback] For each observing time points, you should provide a unique topic name!");
   }
 
-  std::vector<::ros::Publisher> constraintPublishers;
-  for (const auto& name : topicNames) {
-    constraintPublishers.push_back(nodeHandle.advertise<ocs2_msgs::constraint>(name, 1, true));
-  }
+  // std::vector<::ros::Publisher> constraintPublishers;
+  // for (const auto& name : topicNames) {
+  //   constraintPublishers.push_back(nodeHandle.advertise<ocs2_msgs::constraint>(name, 1, true));
+  // }
 
   // note that we need to copy the publishers as the local ones will go out of scope. Good news is that ROS publisher
   // behaves like std::sharted_ptr ("Once all copies of a specific Publisher go out of scope, any subscriber status callbacks
@@ -73,7 +73,7 @@ SolverObserver::constraint_callback_t createConstraintCallback(::ros::NodeHandle
               throw std::runtime_error("[createConstraintCallback] This CallbackInterpolationStrategy is not implemented!");
           }
         }();
-        constraintPublishers[i].publish(ros_msg_conversions::createConstraintMsg(t, constraint));
+        // constraintPublishers[i].publish(ros_msg_conversions::createConstraintMsg(t, constraint));
       }
     }
   };
@@ -82,17 +82,17 @@ SolverObserver::constraint_callback_t createConstraintCallback(::ros::NodeHandle
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-SolverObserver::lagrangian_callback_t createLagrangianCallback(::ros::NodeHandle& nodeHandle, const scalar_array_t& observingTimePoints,
+SolverObserver::lagrangian_callback_t createLagrangianCallback(rclcpp::Node& nodeHandle, const scalar_array_t& observingTimePoints,
                                                                const std::vector<std::string>& topicNames,
                                                                CallbackInterpolationStrategy interpolationStrategy) {
   if (observingTimePoints.size() != topicNames.size()) {
     throw std::runtime_error("[createLagrangianCallback] For each observing time points, you should provide a unique topic name!");
   }
 
-  std::vector<::ros::Publisher> metricsPublishers;
-  for (const auto& name : topicNames) {
-    metricsPublishers.push_back(nodeHandle.advertise<ocs2_msgs::lagrangian_metrics>(name, 1, true));
-  }
+  // std::vector<::ros::Publisher> metricsPublishers;
+  // for (const auto& name : topicNames) {
+  //   metricsPublishers.push_back(nodeHandle.advertise<ocs2_msgs::lagrangian_metrics>(name, 1, true));
+  // }
 
   // note that we need to copy the publishers as the local ones will go out of scope. Good news is that ROS publisher
   // behaves like std::sharted_ptr ("Once all copies of a specific Publisher go out of scope, any subscriber status callbacks
@@ -113,7 +113,7 @@ SolverObserver::lagrangian_callback_t createLagrangianCallback(::ros::NodeHandle
               throw std::runtime_error("[createLagrangianCallback] This CallbackInterpolationStrategy is not implemented!");
           }
         }();
-        metricsPublishers[i].publish(ros_msg_conversions::createLagrangianMetricsMsg(t, metrics));
+        // metricsPublishers[i].publish(ros_msg_conversions::createLagrangianMetricsMsg(t, metrics));
       }
     }
   };
@@ -122,17 +122,17 @@ SolverObserver::lagrangian_callback_t createLagrangianCallback(::ros::NodeHandle
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-SolverObserver::multiplier_callback_t createMultiplierCallback(::ros::NodeHandle& nodeHandle, const scalar_array_t& observingTimePoints,
+SolverObserver::multiplier_callback_t createMultiplierCallback(rclcpp::Node& nodeHandle, const scalar_array_t& observingTimePoints,
                                                                const std::vector<std::string>& topicNames,
                                                                CallbackInterpolationStrategy interpolationStrategy) {
   if (observingTimePoints.size() != topicNames.size()) {
     throw std::runtime_error("[createMultiplierCallback] For each observing time points, you should provide a unique topic name!");
   }
 
-  std::vector<::ros::Publisher> multiplierPublishers;
-  for (const auto& name : topicNames) {
-    multiplierPublishers.push_back(nodeHandle.advertise<ocs2_msgs::multiplier>(name, 1, true));
-  }
+  // std::vector<::ros::Publisher> multiplierPublishers;
+  // for (const auto& name : topicNames) {
+  //   multiplierPublishers.push_back(nodeHandle.advertise<ocs2_msgs::multiplier>(name, 1, true));
+  // }
 
   // note that we need to copy the publishers as the local ones will go out of scope. Good news is that ROS publisher
   // behaves like std::sharted_ptr ("Once all copies of a specific Publisher go out of scope, any subscriber status callbacks
@@ -153,7 +153,7 @@ SolverObserver::multiplier_callback_t createMultiplierCallback(::ros::NodeHandle
               throw std::runtime_error("[createMultiplierCallback] This CallbackInterpolationStrategy is not implemented!");
           }
         }();
-        multiplierPublishers[i].publish(ros_msg_conversions::createMultiplierMsg(t, multiplier));
+        // multiplierPublishers[i].publish(ros_msg_conversions::createMultiplierMsg(t, multiplier));
       }
     }
   };

@@ -1,6 +1,6 @@
 # MPC target trajectories
 
-float64[]   time_rajectory        # MPC target time trajectory
-MpcState[]  state_rajectory       # MPC target state trajectory
-MpcInput[]  input_rajectory       # MPC target input trajectory
+float64[]   time_trajectory        # MPC target time trajectory
+MpcState[]  state_trajectory       # MPC target state trajectory
+MpcInput[]  input_trajectory       # MPC target input trajectory
 

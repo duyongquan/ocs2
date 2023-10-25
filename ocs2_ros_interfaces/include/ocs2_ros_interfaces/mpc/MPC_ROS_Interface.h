@@ -102,7 +102,7 @@ class MPC_ROS_Interface {
    * (1) The MPC policy publisher (either feedback or feedforward policy).
    * (2) The observation subscriber which gets the current measured state to invoke the MPC run routine.
    */
-  void launchNodes(ros::NodeHandle& nodeHandle);
+  void launchNodes(rclcpp::Node& nodeHandle);
 
  protected:
   /**
@@ -111,7 +111,7 @@ class MPC_ROS_Interface {
    * @param req: Service request.
    * @param res: Service response.
    */
-  bool resetMpcCallback(ocs2_msgs::reset::Request& req, ocs2_msgs::reset::Response& res);
+  bool resetMpcCallback(ocs2_msgs::srv::Reset::Request& req, ocs2_msgs::srv::Reset::Response& res);
 
   /**
    * Creates MPC Policy message.
@@ -121,7 +121,7 @@ class MPC_ROS_Interface {
    * @param [in] performanceIndices: The performance indices data of the solver.
    * @return MPC policy message.
    */
-  static ocs2_msgs::mpc_flattened_controller createMpcPolicyMsg(const PrimalSolution& primalSolution, const CommandData& commandData,
+  static ocs2_msgs::msg::MpcFlattenedController createMpcPolicyMsg(const PrimalSolution& primalSolution, const CommandData& commandData,
                                                                 const PerformanceIndex& performanceIndices);
 
   /**
@@ -142,7 +142,7 @@ class MPC_ROS_Interface {
    *
    * @param [in] msg: The observation message.
    */
-  void mpcObservationCallback(const ocs2_msgs::mpc_observation::ConstPtr& msg);
+  void mpcObservationCallback(const ocs2_msgs::msg::MpcObservation::ConstPtr& msg);
 
  protected:
   /*
@@ -152,13 +152,13 @@ class MPC_ROS_Interface {
 
   std::string topicPrefix_;
 
-  std::shared_ptr<ros::NodeHandle> nodeHandlerPtr_;
+  std::shared_ptr<rclcpp::Node> nodeHandlerPtr_;
 
   // Publishers and subscribers
-  ::ros::Subscriber mpcObservationSubscriber_;
-  ::ros::Subscriber mpcTargetTrajectoriesSubscriber_;
-  ::ros::Publisher mpcPolicyPublisher_;
-  ::ros::ServiceServer mpcResetServiceServer_;
+  // ::ros::Subscriber mpcObservationSubscriber_;
+  // ::ros::Subscriber mpcTargetTrajectoriesSubscriber_;
+  // ::ros::Publisher mpcPolicyPublisher_;
+  // ::ros::ServiceServer mpcResetServiceServer_;
 
   std::unique_ptr<CommandData> bufferCommandPtr_;
   std::unique_ptr<CommandData> publisherCommandPtr_;

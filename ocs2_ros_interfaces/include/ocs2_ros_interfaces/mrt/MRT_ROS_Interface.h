@@ -67,8 +67,10 @@ class MRT_ROS_Interface : public MRT_BASE {
    * policy's receiving topic "topicPrefix_mpc_policy", and MPC reset service "topicPrefix_mpc_reset".
    * @param [in] mrtTransportHints: ROS transmission protocol.
    */
-  explicit MRT_ROS_Interface(std::string topicPrefix = "anonymousRobot",
-                             ::ros::TransportHints mrtTransportHints = ::ros::TransportHints().tcpNoDelay());
+  // explicit MRT_ROS_Interface(std::string topicPrefix = "anonymousRobot",
+  //                            ::ros::TransportHints mrtTransportHints = ::ros::TransportHints().tcpNoDelay());
+
+  explicit MRT_ROS_Interface(std::string topicPrefix = "anonymousRobot");
 
   /**
    * Destructor
@@ -96,7 +98,7 @@ class MRT_ROS_Interface : public MRT_BASE {
    * Launches the ROS publishers and subscribers to communicate with the MPC node.
    * @param nodeHandle
    */
-  void launchNodes(::ros::NodeHandle& nodeHandle);
+  void launchNodes(::rclcpp::Node& nodeHandle);
 
   void setCurrentObservation(const SystemObservation& currentObservation) override;
 
@@ -107,7 +109,7 @@ class MRT_ROS_Interface : public MRT_BASE {
    *
    * @param [in] msg: A constant pointer to the message
    */
-  void mpcPolicyCallback(const ocs2_msgs::mpc_flattened_controller::ConstPtr& msg);
+  void mpcPolicyCallback(const ocs2_msgs::msg::MpcFlattenedController::SharedPtr& msg);
 
   /**
    * Helper function to read a MPC policy message.
@@ -117,7 +119,7 @@ class MRT_ROS_Interface : public MRT_BASE {
    * @param [out] primalSolution: The MPC policy data
    * @param [out] performanceIndices: The MPC performance indices data
    */
-  static void readPolicyMsg(const ocs2_msgs::mpc_flattened_controller& msg, CommandData& commandData, PrimalSolution& primalSolution,
+  static void readPolicyMsg(const ocs2_msgs::msg::MpcFlattenedController& msg, CommandData& commandData, PrimalSolution& primalSolution,
                             PerformanceIndex& performanceIndices);
 
   /**
@@ -128,17 +130,17 @@ class MRT_ROS_Interface : public MRT_BASE {
  private:
   std::string topicPrefix_;
 
-  // Publishers and subscribers
-  ::ros::Publisher mpcObservationPublisher_;
-  ::ros::Subscriber mpcPolicySubscriber_;
-  ::ros::ServiceClient mpcResetServiceClient_;
+  // // Publishers and subscribers
+  // ::ros::Publisher mpcObservationPublisher_;
+  // ::ros::Subscriber mpcPolicySubscriber_;
+  // ::ros::ServiceClient mpcResetServiceClient_;
 
   // ROS messages
-  ocs2_msgs::mpc_observation mpcObservationMsg_;
-  ocs2_msgs::mpc_observation mpcObservationMsgBuffer_;
+  ocs2_msgs::msg::MpcObservation mpcObservationMsg_;
+  ocs2_msgs::msg::MpcObservation mpcObservationMsgBuffer_;
 
-  ::ros::CallbackQueue mrtCallbackQueue_;
-  ::ros::TransportHints mrtTransportHints_;
+  // ::ros::CallbackQueue mrtCallbackQueue_;
+  // ::ros::TransportHints mrtTransportHints_;
 
   // Multi-threading for publishers
   bool terminateThread_;

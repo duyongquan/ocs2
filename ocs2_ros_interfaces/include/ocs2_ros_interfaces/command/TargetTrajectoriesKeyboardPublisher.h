@@ -57,7 +57,7 @@ class TargetTrajectoriesKeyboardPublisher final {
    * @param [in] targetCommandLimits: The limits of the loaded command from command-line (for safety purposes).
    * @param [in] commandLineToTargetTrajectoriesFun: A function which transforms the command line input to TargetTrajectories.
    */
-  TargetTrajectoriesKeyboardPublisher(::ros::NodeHandle& nodeHandle, const std::string& topicPrefix,
+  TargetTrajectoriesKeyboardPublisher(rclcpp::Node& nodeHandle, const std::string& topicPrefix,
                                       const scalar_array_t& targetCommandLimits,
                                       CommandLineToTargetTrajectories commandLineToTargetTrajectoriesFun);
 
@@ -81,7 +81,7 @@ class TargetTrajectoriesKeyboardPublisher final {
 
   std::unique_ptr<TargetTrajectoriesRosPublisher> targetTrajectoriesPublisherPtr_;
 
-  ::ros::Subscriber observationSubscriber_;
+  // ::ros::Subscriber observationSubscriber_;
   mutable std::mutex latestObservationMutex_;
   SystemObservation latestObservation_;
 };
