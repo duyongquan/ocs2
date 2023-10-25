@@ -9,8 +9,12 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
+  <exec_depend>ocs2_core</exec_depend>
   <exec_depend>ocs2_msgs</exec_depend>
-
+  <exec_depend>ocs2_oc</exec_depend>
+  <exec_depend>ocs2_thirdparty</exec_depend>
+  
+  
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 

@@ -1,49 +1,36 @@
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.8)
 project(ocs2_oc)
 
-## Find catkin macros and libraries
-find_package(catkin REQUIRED COMPONENTS
-  cmake_modules
-  ocs2_core
-  # ocs2_qp_solver
-)
-find_package(Boost REQUIRED COMPONENTS
-  system
-  filesystem
-)
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
+# find dependencies
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(ocs2_core REQUIRED)
+find_package(ocs2_thirdparty REQUIRED)
 
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 
 # Generate compile_commands.json for clang tools
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-###################################
-## catkin specific configuration ##
-###################################
-
-catkin_package(
-  INCLUDE_DIRS
-    include
-    test/include
-    ${EIGEN3_INCLUDE_DIRS}
-  LIBRARIES
-    ${PROJECT_NAME}
-  CATKIN_DEPENDS
-    ocs2_core
-  DEPENDS
-    Boost
-)
-
-###########
-## Build ##
-###########
-
 include_directories(
   include
   test/include
   ${EIGEN3_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
-  ${catkin_INCLUDE_DIRS}
+)
+
+set(dependencies
+  rclcpp
+  std_msgs
+  geometry_msgs
+  ocs2_core
+  ocs2_thirdparty
 )
 
 add_library(${PROJECT_NAME}
@@ -80,133 +67,37 @@ add_library(${PROJECT_NAME}
   src/search_strategy/FilterLinesearch.cpp
   src/trajectory_adjustment/TrajectorySpreading.cpp
 )
-target_link_libraries(${PROJECT_NAME}
-  ${catkin_LIBRARIES}
-)
-target_compile_options(${PROJECT_NAME} PUBLIC ${OCS2_CXX_FLAGS})
 
-add_executable(${PROJECT_NAME}_lintTarget
-  src/lintTarget.cpp
-)
+ament_target_dependencies(${PROJECT_NAME} ${dependencies})
 
-#########################
-###   CLANG TOOLING   ###
-#########################
-find_package(cmake_clang_tools QUIET)
-if(cmake_clang_tools_FOUND)
-  message(STATUS "Run clang tooling for target " ${PROJECT_NAME}_lintTarget)
-  add_clang_tooling(
-    TARGETS ${PROJECT_NAME}_lintTarget
-    SOURCE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/test/include
-    CT_HEADER_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include
-    CF_WERROR
-)
-endif(cmake_clang_tools_FOUND)
+if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  # the following line skips the linter which checks for copyrights
+  # comment the line when a copyright and license is added to all source files
+  set(ament_cmake_copyright_FOUND TRUE)
+  # the following line skips cpplint (only works in a git repo)
+  # comment the line when this package is in a git repo and when
+  # a copyright and license is added to all source files
+  set(ament_cmake_cpplint_FOUND TRUE)
+  ament_lint_auto_find_test_dependencies()
+endif()
 
-#############
-## Install ##
-#############
-
-install(
-  TARGETS ${PROJECT_NAME}
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
-install(DIRECTORY include/${PROJECT_NAME}/
-  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-)
-install(DIRECTORY test/include/${PROJECT_NAME}/
-  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+install(TARGETS ${PROJECT_NAME}
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
 )
 
-#############
-## Testing ##
-#############
-## Info ==============================
-## to run tests, cd package folder and run
-## $ catkin build -DCMAKE_BUILD_TYPE=RelWithDebInfo --this
-## $ catkin run_tests --no-deps --this
-## to see the summary of unit test results run
-## $ catkin_test_results ../../../build/ocs2_oc
-
-catkin_add_gtest(test_${PROJECT_NAME}_multiple_shooting
-  test/multiple_shooting/testProjectionMultiplierCoefficients.cpp
-  test/multiple_shooting/testTranscriptionMetrics.cpp
-  test/multiple_shooting/testTranscriptionPerformanceIndex.cpp
-)
-add_dependencies(test_${PROJECT_NAME}_multiple_shooting
-  ${catkin_EXPORTED_TARGETS}
-)
-target_link_libraries(test_${PROJECT_NAME}_multiple_shooting
-  ${PROJECT_NAME}
-  ${catkin_LIBRARIES}
-  gtest_main
+install(TARGETS ${executable_name}
+  RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 
-catkin_add_gtest(test_${PROJECT_NAME}_data
-  test/oc_data/testTimeDiscretization.cpp
-)
-add_dependencies(test_${PROJECT_NAME}_data
-  ${catkin_EXPORTED_TARGETS}
-)
-target_link_libraries(test_${PROJECT_NAME}_data
-  ${PROJECT_NAME}
-  ${catkin_LIBRARIES}
-  gtest_main
+install(DIRECTORY include/
+  DESTINATION include/
 )
 
-catkin_add_gtest(test_${PROJECT_NAME}_rollout
-   test/rollout/testTimeTriggeredRollout.cpp
-   test/rollout/testStateTriggeredRollout.cpp
-)
-add_dependencies(test_${PROJECT_NAME}_rollout
-  ${catkin_EXPORTED_TARGETS}
-)
-target_link_libraries(test_${PROJECT_NAME}_rollout
-  ${PROJECT_NAME}
-  ${catkin_LIBRARIES}
-  gtest_main
-)
+ament_export_include_directories(include)
+ament_export_libraries()
+ament_export_dependencies(${PROJECT_NAME})
 
-catkin_add_gtest(test_change_of_variables
-  test/testChangeOfInputVariables.cpp
-)
-add_dependencies(test_change_of_variables
-  ${catkin_EXPORTED_TARGETS}
-)
-target_link_libraries(test_change_of_variables
-  ${PROJECT_NAME}
-  ${catkin_LIBRARIES}
-  gtest_main
-)
-
-catkin_add_gtest(test_trajectory_spreading
-  test/trajectory_adjustment/TrajectorySpreadingTest.cpp
-)
-add_dependencies(test_trajectory_spreading
-  ${catkin_EXPORTED_TARGETS}
-)
-target_link_libraries(test_trajectory_spreading
-  ${PROJECT_NAME}
-  ${catkin_LIBRARIES}
-  gtest_main
-)
-
-catkin_add_gtest(test_ocp_to_kkt
-  test/oc_problem/testOcpToKkt.cpp
-)
-target_link_libraries(test_ocp_to_kkt
-  ${PROJECT_NAME}
-  ${catkin_LIBRARIES}
-  gtest_main
-)
-
-catkin_add_gtest(test_precondition
-  test/precondition/testPrecondition.cpp
-)
-target_link_libraries(test_precondition
-  ${PROJECT_NAME}
-  ${catkin_LIBRARIES}
-  gtest_main
-)
+ament_package()
