@@ -1,30 +1,18 @@
 <?xml version="1.0"?>
-<package format="2">
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
   <name>ocs2_doc</name>
-  <version>1.0.0</version>
-  <description>Documentation for OCS2</description>
+  <version>0.0.0</version>
+  <description>TODO: Package description</description>
+  <maintainer email="quandy2020@126.com">quandy</maintainer>
+  <license>TODO: License declaration</license>
 
-  <maintainer email="farbod.farshidian@gmail.com">Farbod Farshidian</maintainer>
-  <maintainer email="jcarius@ethz.ch">Jan Carius</maintainer>
-  <maintainer email="rgrandia@ethz.ch">Ruben Grandia</maintainer>
+  <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <license>BSD</license>
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
 
-  <buildtool_depend>catkin</buildtool_depend>
-
-  <doc_depend>doxygen</doc_depend>
-  <doc_depend>texlive-latex-base</doc_depend>
-
-  <exec_depend>ocs2_core</exec_depend>
-  <exec_depend>ocs2_frank_wolfe</exec_depend>
-  <exec_depend>ocs2_oc</exec_depend>
-  <exec_depend>ocs2_mpc</exec_depend>
-  <exec_depend>ocs2_ddp</exec_depend>
-  <exec_depend>ocs2_sqp</exec_depend>
-  <exec_depend>ocs2_python_interface</exec_depend>
-  <exec_depend>ocs2_ros_interfaces</exec_depend>
-  <exec_depend>ocs2_robotic_tools</exec_depend>
-  <exec_depend>ocs2_robotic_examples</exec_depend>
-  <exec_depend>ocs2_pinocchio</exec_depend>
-
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
 </package>
