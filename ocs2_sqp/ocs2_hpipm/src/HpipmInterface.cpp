@@ -32,11 +32,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <ocs2_core/misc/LinearAlgebra.h>
 
 extern "C" {
-#include <hpipm_d_ocp_qp.h>
-#include <hpipm_d_ocp_qp_dim.h>
-#include <hpipm_d_ocp_qp_ipm.h>
-#include <hpipm_d_ocp_qp_sol.h>
-#include <hpipm_timing.h>
+#include <ocs2_hpipm/hpipm_d_ocp_qp.h>
+#include <ocs2_hpipm/hpipm_d_ocp_qp_dim.h>
+#include <ocs2_hpipm/hpipm_d_ocp_qp_ipm.h>
+#include <ocs2_hpipm/hpipm_d_ocp_qp_sol.h>
+#include <ocs2_hpipm/hpipm_timing.h>
 }
 
 namespace {

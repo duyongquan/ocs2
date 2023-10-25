@@ -9,8 +9,9 @@ endif()
 find_package(ament_cmake REQUIRED)
 include(FetchContent)
 
+
 # Define directories
-set(BLASFEO_DEVEL_PREFIX ${CATKIN_DEVEL_PREFIX} CACHE STRING "Blasfeo install path")
+set(BLASFEO_DEVEL_PREFIX ${PROJECT_SOURCE_DIR} CACHE STRING "Blasfeo install path")
 set(BLASFEO_INCLUDE_DIR ${BLASFEO_DEVEL_PREFIX}/include)
 set(BLASFEO_LIB_DIR ${BLASFEO_DEVEL_PREFIX}/lib)
 set(BLASFEO_DOWNLOAD_DIR ${CMAKE_CURRENT_BINARY_DIR}/download)
