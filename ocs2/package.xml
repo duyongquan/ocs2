@@ -21,7 +21,7 @@
   <exec_depend>ocs2_pinocchio</exec_depend> 
   <exec_depend>ocs2_robotic_assets</exec_depend>
   <exec_depend>ocs2_robotic_tools</exec_depend>
-  <!-- <exec_depend>ocs2_ros_interfaces</exec_depend> -->
+  <exec_depend>ocs2_ros_interfaces</exec_depend>
   <exec_depend>ocs2_slp</exec_depend>
   <!-- <exec_depend>ocs2_sqp</exec_depend>  -->
   <exec_depend>ocs2_qp_solver</exec_depend> 
