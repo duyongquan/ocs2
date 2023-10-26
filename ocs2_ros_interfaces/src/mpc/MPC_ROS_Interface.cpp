@@ -182,7 +182,8 @@ ocs2_msgs::msg::MpcFlattenedController MPC_ROS_Interface::createMpcPolicyMsg(con
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-void MPC_ROS_Interface::publisherWorker() {
+void MPC_ROS_Interface::publisherWorker() 
+{
   // while (!terminateThread_) {
   //   std::unique_lock<std::mutex> lk(publisherMutex_);
 
@@ -214,7 +215,8 @@ void MPC_ROS_Interface::publisherWorker() {
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-void MPC_ROS_Interface::copyToBuffer(const SystemObservation& mpcInitObservation) {
+void MPC_ROS_Interface::copyToBuffer(const SystemObservation& mpcInitObservation) 
+{
   // // buffer policy mutex
   // std::lock_guard<std::mutex> policyBufferLock(bufferMutex_);
 
@@ -236,7 +238,7 @@ void MPC_ROS_Interface::copyToBuffer(const SystemObservation& mpcInitObservation
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-void MPC_ROS_Interface::mpcObservationCallback(const ocs2_msgs::msg::MpcObservation::ConstPtr& msg) {
+// void MPC_ROS_Interface::mpcObservationCallback(const ocs2_msgs::msg::MpcObservation::ConstPtr& msg) {
 //   std::lock_guard<std::mutex> resetLock(resetMutex_);
 
 //   if (!resetRequestedEver_.load()) {
@@ -294,7 +296,7 @@ void MPC_ROS_Interface::mpcObservationCallback(const ocs2_msgs::msg::MpcObservat
 // /******************************************************************************************************/
 // /******************************************************************************************************/
 // /******************************************************************************************************/
-// void MPC_ROS_Interface::shutdownNode() {
+void MPC_ROS_Interface::shutdownNode() {
 // #ifdef PUBLISH_THREAD
 //   ROS_INFO_STREAM("Shutting down workers ...");
 

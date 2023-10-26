@@ -10,6 +10,7 @@ find_package(ament_cmake REQUIRED)
 find_package(ament_index_cpp REQUIRED) 
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(ocs2_core REQUIRED)
 find_package(ocs2_ddp REQUIRED)
@@ -36,6 +37,7 @@ set(dependencies
   ament_index_cpp
   rclcpp
   std_msgs
+  sensor_msgs
   geometry_msgs
   ocs2_core
   ocs2_ddp
@@ -49,4 +51,42 @@ set(dependencies
 # Mpc node
 add_executable(cartpole_mpc src/CartpoleMpcNode.cpp)
 ament_target_dependencies(cartpole_mpc ${dependencies})
+target_link_libraries(cartpole_mpc ${Boost_LIBRARIES})
 
+# Dummy node
+add_executable(cartpole_dummy_test
+  src/DummyCartpoleNode.cpp
+  src/CartpoleDummyVisualization.cpp
+)
+ament_target_dependencies(cartpole_dummy_test ${dependencies})
+target_link_libraries(cartpole_dummy_test ${Boost_LIBRARIES})
+
+if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  set(ament_cmake_copyright_FOUND TRUE)
+  set(ament_cmake_cpplint_FOUND TRUE)
+  ament_lint_auto_find_test_dependencies()
+endif()
+
+install(TARGETS cartpole_mpc cartpole_dummy_test
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
+
+# install(TARGETS cartpole_mpc cartpole_dummy_test
+#   RUNTIME DESTINATION lib/${PROJECT_NAME}
+# )
+
+install(DIRECTORY include/
+  DESTINATION include/
+)
+
+install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})
+install(DIRECTORY rviz DESTINATION share/${PROJECT_NAME})
+
+ament_export_include_directories(include)
+ament_export_libraries(${PROJECT_NAME})
+ament_export_dependencies(${dependencies})
+
+ament_package()

@@ -29,8 +29,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#include <ros/ros.h>
-#include <sensor_msgs/JointState.h>
+#include "rclcpp/rclcpp.hpp"
+#include <sensor_msgs/msg/joint_state.hpp>
 
 #include <ocs2_ros_interfaces/mrt/DummyObserver.h>
 
@@ -39,18 +39,21 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace ocs2 {
 namespace cartpole {
 
-class CartpoleDummyVisualization : public DummyObserver {
+class CartpoleDummyVisualization : public DummyObserver 
+{
  public:
-  explicit CartpoleDummyVisualization(ros::NodeHandle& nodeHandle) { launchVisualizerNode(nodeHandle); }
+  explicit CartpoleDummyVisualization(rclcpp::Node& nodeHandle) 
+  { 
+    launchVisualizerNode(nodeHandle); 
+  }
 
   ~CartpoleDummyVisualization() override = default;
 
   void update(const SystemObservation& observation, const PrimalSolution& policy, const CommandData& command) override;
 
  private:
-  void launchVisualizerNode(ros::NodeHandle& nodeHandle);
-
-  ros::Publisher jointPublisher_;
+  void launchVisualizerNode(rclcpp::Node& nodeHandle);
+  rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr jointPublisher_;
 };
 
 }  // namespace cartpole
