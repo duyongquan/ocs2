@@ -75,6 +75,8 @@ class MPC_ROS_Interface {
    */
   explicit MPC_ROS_Interface(MPC_BASE& mpc, std::string topicPrefix = "anonymousRobot");
 
+  explicit MPC_ROS_Interface(rclcpp::Node* nodeHandle, MPC_BASE& mpc, std::string topicPrefix = "anonymousRobot");
+  
   /**
    * Destructor.
    */
@@ -104,6 +106,8 @@ class MPC_ROS_Interface {
    */
   void launchNodes(rclcpp::Node& nodeHandle);
 
+  void launchNodes();
+
  protected:
   /**
    * Callback to reset MPC.
@@ -111,7 +115,7 @@ class MPC_ROS_Interface {
    * @param req: Service request.
    * @param res: Service response.
    */
-  bool resetMpcCallback(ocs2_msgs::srv::Reset::Request& req, ocs2_msgs::srv::Reset::Response& res);
+  bool resetMpcCallback(const std::shared_ptr<ocs2_msgs::srv::Reset::Request> req, std::shared_ptr<ocs2_msgs::srv::Reset::Response> res);
 
   /**
    * Creates MPC Policy message.
@@ -152,13 +156,18 @@ class MPC_ROS_Interface {
 
   std::string topicPrefix_;
 
-  std::shared_ptr<rclcpp::Node> nodeHandlerPtr_;
+  rclcpp::Node* nodeHandlerPtr_;
 
   // Publishers and subscribers
   // ::ros::Subscriber mpcObservationSubscriber_;
   // ::ros::Subscriber mpcTargetTrajectoriesSubscriber_;
   // ::ros::Publisher mpcPolicyPublisher_;
   // ::ros::ServiceServer mpcResetServiceServer_;
+
+  rclcpp::Subscription<ocs2_msgs::msg::MpcObservation>::SharedPtr mpcObservationSubscriber_;
+  // rclcpp::Subscription<nav2_msgs::msg::SpeedLimit>::SharedPtr mpcTargetTrajectoriesSubscriber_;
+  rclcpp::Publisher<ocs2_msgs::msg::MpcFlattenedController>::SharedPtr mpcPolicyPublisher_;
+  rclcpp::Service<ocs2_msgs::srv::Reset>::SharedPtr mpcResetServiceServer_{nullptr};
 
   std::unique_ptr<CommandData> bufferCommandPtr_;
   std::unique_ptr<CommandData> publisherCommandPtr_;

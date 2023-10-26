@@ -57,8 +57,8 @@ class TargetTrajectoriesInteractiveMarker final {
    * observation is be expected on "topicPrefix_mpc_observation" topic.
    * @param [in] gaolPoseToTargetTrajectories: A function which transforms the commanded pose to TargetTrajectories.
    */
-  // TargetTrajectoriesInteractiveMarker(rclcpp::Node& nodeHandle, const std::string& topicPrefix,
-  //                                     GaolPoseToTargetTrajectories gaolPoseToTargetTrajectories);
+  TargetTrajectoriesInteractiveMarker(rclcpp::Node& nodeHandle, const std::string& topicPrefix,
+                                      GaolPoseToTargetTrajectories gaolPoseToTargetTrajectories);
 
   /**
    * Spins ROS to update the interactive markers.
@@ -69,17 +69,19 @@ class TargetTrajectoriesInteractiveMarker final {
   }
 
  private:
+  void observationCallback(const ocs2_msgs::msg::MpcObservation::SharedPtr msg);
+
   visualization_msgs::msg::InteractiveMarker createInteractiveMarker() const;
   void processFeedback(const visualization_msgs::msg::InteractiveMarkerFeedback::ConstPtr& feedback);
 
   interactive_markers::MenuHandler menuHandler_;
-  interactive_markers::InteractiveMarkerServer server_;
+  // interactive_markers::InteractiveMarkerServer server_;
 
   GaolPoseToTargetTrajectories gaolPoseToTargetTrajectories_;
 
   std::unique_ptr<TargetTrajectoriesRosPublisher> targetTrajectoriesPublisherPtr_;
 
-  // ::ros::Subscriber observationSubscriber_;
+  rclcpp::Subscription<ocs2_msgs::msg::MpcObservation>::SharedPtr observationSubscriber_;
   mutable std::mutex latestObservationMutex_;
   SystemObservation latestObservation_;
 };

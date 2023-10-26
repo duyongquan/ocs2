@@ -62,7 +62,7 @@ class TargetTrajectoriesRosPublisher final {
   void publishTargetTrajectories(const TargetTrajectories& targetTrajectories);
 
  private:
-  // ::ros::Publisher targetTrajectoriesPublisher_;
+  rclcpp::Publisher<ocs2_msgs::msg::MpcTargetTrajectories>::SharedPtr targetTrajectoriesPublisher_;
 };
 
 }  // namespace ocs2
