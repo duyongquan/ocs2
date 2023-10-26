@@ -70,7 +70,7 @@ class MRT_ROS_Interface : public MRT_BASE {
   // explicit MRT_ROS_Interface(std::string topicPrefix = "anonymousRobot",
   //                            ::ros::TransportHints mrtTransportHints = ::ros::TransportHints().tcpNoDelay());
 
-  explicit MRT_ROS_Interface(std::string topicPrefix = "anonymousRobot");
+  explicit MRT_ROS_Interface(rclcpp::Node* node_, std::string topicPrefix = "anonymousRobot");
 
   /**
    * Destructor
@@ -100,6 +100,8 @@ class MRT_ROS_Interface : public MRT_BASE {
    */
   void launchNodes(::rclcpp::Node& nodeHandle);
 
+  void launchNodes();
+
   void setCurrentObservation(const SystemObservation& currentObservation) override;
 
  private:
@@ -109,7 +111,7 @@ class MRT_ROS_Interface : public MRT_BASE {
    *
    * @param [in] msg: A constant pointer to the message
    */
-  void mpcPolicyCallback(const ocs2_msgs::msg::MpcFlattenedController::SharedPtr& msg);
+  void mpcPolicyCallback(const ocs2_msgs::msg::MpcFlattenedController::SharedPtr msg);
 
   /**
    * Helper function to read a MPC policy message.
@@ -130,17 +132,15 @@ class MRT_ROS_Interface : public MRT_BASE {
  private:
   std::string topicPrefix_;
 
-  // // Publishers and subscribers
-  // ::ros::Publisher mpcObservationPublisher_;
-  // ::ros::Subscriber mpcPolicySubscriber_;
-  // ::ros::ServiceClient mpcResetServiceClient_;
+  rclcpp::Node* node_;
+  // Publishers and subscribers
+  rclcpp::Publisher<ocs2_msgs::msg::MpcObservation>::SharedPtr mpcObservationPublisher_;
+  rclcpp::Subscription<ocs2_msgs::msg::MpcFlattenedController>::SharedPtr mpcPolicySubscriber_;
+  rclcpp::Client<ocs2_msgs::srv::Reset>::SharedPtr mpcResetServiceClient_{nullptr};
 
   // ROS messages
   ocs2_msgs::msg::MpcObservation mpcObservationMsg_;
   ocs2_msgs::msg::MpcObservation mpcObservationMsgBuffer_;
-
-  // ::ros::CallbackQueue mrtCallbackQueue_;
-  // ::ros::TransportHints mrtTransportHints_;
 
   // Multi-threading for publishers
   bool terminateThread_;

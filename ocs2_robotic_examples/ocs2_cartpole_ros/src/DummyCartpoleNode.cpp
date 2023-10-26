@@ -60,9 +60,9 @@ public:
     ocs2::cartpole::CartPoleInterface cartPoleInterface(taskFile, libFolder, false /*verbose*/);
 
     // MRT
-    ocs2::MRT_ROS_Interface mrt(robotName);
+    ocs2::MRT_ROS_Interface mrt(this, robotName);
     mrt.initRollout(&cartPoleInterface.getRollout());
-    mrt.launchNodes(*this);
+    mrt.launchNodes();
 
     // Visualization
     auto cartpoleDummyVisualization = std::make_shared<ocs2::cartpole::CartpoleDummyVisualization>(*this);

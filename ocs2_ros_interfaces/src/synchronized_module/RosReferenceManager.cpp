@@ -42,27 +42,38 @@ namespace ocs2 {
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-RosReferenceManager::RosReferenceManager(std::string topicPrefix, std::shared_ptr<ReferenceManagerInterface> referenceManagerPtr)
-    : ReferenceManagerDecorator(std::move(referenceManagerPtr)), topicPrefix_(std::move(topicPrefix)) {}
+RosReferenceManager::RosReferenceManager(rclcpp::Node* node, std::string topicPrefix, std::shared_ptr<ReferenceManagerInterface> referenceManagerPtr)
+    : node_{node},
+      ReferenceManagerDecorator(std::move(referenceManagerPtr)), 
+      topicPrefix_(std::move(topicPrefix)) 
+{}
 
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-void RosReferenceManager::subscribe(rclcpp::Node& nodeHandle) {
-  // // ModeSchedule
-  // auto modeScheduleCallback = [this](const ocs2_msgs::mode_schedule::ConstPtr& msg) {
-  //   auto modeSchedule = ros_msg_conversions::readModeScheduleMsg(*msg);
-  //   referenceManagerPtr_->setModeSchedule(std::move(modeSchedule));
-  // };
-  // modeScheduleSubscriber_ = nodeHandle.subscribe<ocs2_msgs::mode_schedule>(topicPrefix_ + "_mode_schedule", 1, modeScheduleCallback);
+void RosReferenceManager::subscribe(rclcpp::Node& nodeHandle) 
+{
+  // ModeSchedule
+  auto modeScheduleCallback = [this](const ocs2_msgs::msg::ModeSchedule::ConstPtr& msg) 
+  {
+    auto modeSchedule = ros_msg_conversions::readModeScheduleMsg(*msg);
+    referenceManagerPtr_->setModeSchedule(std::move(modeSchedule));
+  };
 
-  // // TargetTrajectories
-  // auto targetTrajectoriesCallback = [this](const ocs2_msgs::mpc_target_trajectories::ConstPtr& msg) {
-  //   auto targetTrajectories = ros_msg_conversions::readTargetTrajectoriesMsg(*msg);
-  //   referenceManagerPtr_->setTargetTrajectories(std::move(targetTrajectories));
-  // };
-  // targetTrajectoriesSubscriber_ =
-  //     nodeHandle.subscribe<ocs2_msgs::mpc_target_trajectories>(topicPrefix_ + "_mpc_target", 1, targetTrajectoriesCallback);
+  // subscriber
+  modeScheduleSubscriber_ = node_->create_subscription<ocs2_msgs::msg::ModeSchedule>(
+    topicPrefix_ + "_mode_schedule", 10, modeScheduleCallback);
+
+  // TargetTrajectories
+  auto targetTrajectoriesCallback = [this](const ocs2_msgs::msg::MpcTargetTrajectories::ConstPtr& msg) 
+  {
+    auto targetTrajectories = ros_msg_conversions::readTargetTrajectoriesMsg(*msg);
+    referenceManagerPtr_->setTargetTrajectories(std::move(targetTrajectories));
+  };
+
+  // targetTrajectoriesSubscriber_
+  targetTrajectoriesSubscriber_ = node_->create_subscription<ocs2_msgs::msg::MpcTargetTrajectories>(
+    topicPrefix_ + "_mpc_target", 10, targetTrajectoriesCallback);
 }
 
 }  // namespace ocs2

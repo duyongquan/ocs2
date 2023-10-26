@@ -27,14 +27,13 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     # Get the launch directory
-    bringup_dir = get_package_share_directory('ocs2_cartpole_ros')
+    bringup_dir = get_package_share_directory('ocs2_double_integrator_ros')
     launch_dir = os.path.join(bringup_dir, 'launch')
 
     # Create the launch configuration variables
     namespace = LaunchConfiguration('namespace')
     use_namespace = LaunchConfiguration('use_namespace')
     use_sim_time = LaunchConfiguration('use_sim_time')
-    params_file = LaunchConfiguration('params_file')
 
     declare_namespace_cmd = DeclareLaunchArgument(
         'namespace',
@@ -51,12 +50,7 @@ def generate_launch_description():
         default_value='false',
         description='Use simulation (Gazebo) clock if true')
 
-    declare_params_file_cmd = DeclareLaunchArgument(
-        'params_file',
-        default_value=os.path.join(bringup_dir, 'params', 'controller_params.yaml'),
-        description='Full path to the ROS2 parameters file to use for all launched nodes')
-
-    urdf = os.path.join(get_package_share_directory('ocs2_robotic_assets'), 'resources', 'cartpole', 'urdf', 'cartpole.urdf')
+    urdf = os.path.join(get_package_share_directory('ocs2_robotic_assets'), 'resources', 'double_integrator', 'urdf', 'double_integrator.urdf')
 
     with open(urdf, 'r') as infp:
         robot_description = infp.read()
@@ -78,7 +72,6 @@ def generate_launch_description():
     ld.add_action(declare_namespace_cmd)
     ld.add_action(declare_use_namespace_cmd)
     ld.add_action(declare_use_sim_time_cmd)
-    ld.add_action(declare_params_file_cmd)
 
     # Add the actions to launch all of the navigation nodes
     ld.add_action(start_robot_state_publisher_cmd)

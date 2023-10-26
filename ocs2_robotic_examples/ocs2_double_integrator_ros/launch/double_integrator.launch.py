@@ -27,7 +27,7 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     # Get the launch directory
-    bringup_dir = get_package_share_directory('ocs2_cartpole_ros')
+    bringup_dir = get_package_share_directory('ocs2_double_integrator_ros')
     launch_dir = os.path.join(bringup_dir, 'launch')
 
     # Create the launch configuration variables
@@ -51,25 +51,51 @@ def generate_launch_description():
         default_value='false',
         description='Use simulation (Gazebo) clock if true')
 
-    declare_params_file_cmd = DeclareLaunchArgument(
-        'params_file',
-        default_value=os.path.join(bringup_dir, 'params', 'controller_params.yaml'),
-        description='Full path to the ROS2 parameters file to use for all launched nodes')
+    rviz_config = os.path.join(bringup_dir, 'rviz', 'double_integrator.rviz')
 
-    urdf = os.path.join(get_package_share_directory('ocs2_robotic_assets'), 'resources', 'cartpole', 'urdf', 'cartpole.urdf')
+    # Launch rviz
+    start_rviz_cmd = Node(
+        package='rviz2',
+        executable='rviz2',
+        arguments=['-d', rviz_config],
+        output='screen')
 
-    with open(urdf, 'r') as infp:
-        robot_description = infp.read()
+    # Launch cartpole urdf
+    start_urdf_cmd = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(launch_dir, 'visualize.launch.py')),
+        launch_arguments={'namespace': namespace,
+                          'use_namespace': use_namespace}.items())
 
-    # Launch urdf
-    start_robot_state_publisher_cmd = Node(
-        package='robot_state_publisher',
-        executable='robot_state_publisher',
-        name='robot_state_publisher',
-        namespace=namespace,
+    start_multiplot_cmd = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(launch_dir, 'multiplot.launch.py')),
+        launch_arguments={'namespace': namespace,
+                          'use_namespace': use_namespace}.items())
+
+    # Launch double_integrator_mpc
+    start_double_integrator_mpc_cmd = Node(
+        package='ocs2_double_integrator_ros',
+        executable='double_integrator_mpc',
+        name='double_integrator_mpc',
         output='screen',
-        parameters=[{'use_sim_time': use_sim_time,
-                     'robot_description': robot_description}])
+        parameters=[{'use_sim_time': use_sim_time}])
+
+    # Launch double_integrator_dummy_test
+    start_double_integrator_dummy_test_cmd = Node(
+        package='ocs2_double_integrator_ros',
+        executable='double_integrator_dummy_test',
+        name='double_integrator_dummy_test',
+        output='screen',
+        parameters=[{'use_sim_time': use_sim_time}])
+
+    # Launch double_integrator_target
+    start_double_integrator_target_cmd = Node(
+        package='ocs2_double_integrator_ros',
+        executable='double_integrator_target',
+        name='double_integrator_target',
+        output='screen',
+        parameters=[{'use_sim_time': use_sim_time}])
 
     # Create the launch description and populate
     ld = LaunchDescription()
@@ -78,9 +104,14 @@ def generate_launch_description():
     ld.add_action(declare_namespace_cmd)
     ld.add_action(declare_use_namespace_cmd)
     ld.add_action(declare_use_sim_time_cmd)
-    ld.add_action(declare_params_file_cmd)
 
     # Add the actions to launch all of the navigation nodes
-    ld.add_action(start_robot_state_publisher_cmd)
+    ld.add_action(start_rviz_cmd)
+    ld.add_action(start_urdf_cmd)
+    # ld.add_action(start_multiplot_cmd)
+
+    ld.add_action(start_double_integrator_mpc_cmd)
+    ld.add_action(start_double_integrator_dummy_test_cmd)
+    # ld.add_action(start_double_integrator_target_cmd)
 
     return ld

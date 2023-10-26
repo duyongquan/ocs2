@@ -45,15 +45,18 @@ TargetTrajectoriesKeyboardPublisher::TargetTrajectoriesKeyboardPublisher(rclcpp:
     : targetCommandLimits_(Eigen::Map<const vector_t>(targetCommandLimits.data(), targetCommandLimits.size())),
       commandLineToTargetTrajectoriesFun_(std::move(commandLineToTargetTrajectoriesFun)) 
 {
-  // // observation subscriber
-  // auto observationCallback = [this](const ocs2_msgs::mpc_observation::ConstPtr& msg) {
-  //   std::lock_guard<std::mutex> lock(latestObservationMutex_);
-  //   latestObservation_ = ros_msg_conversions::readObservationMsg(*msg);
-  // };
-  // // observationSubscriber_ = nodeHandle.subscribe<ocs2_msgs::mpc_observation>(topicPrefix + "_mpc_observation", 1, observationCallback);
+  // observation subscriber
+  auto observationCallback = [this](const ocs2_msgs::msg::MpcObservation::ConstPtr& msg) 
+  {
+    std::lock_guard<std::mutex> lock(latestObservationMutex_);
+    latestObservation_ = ros_msg_conversions::readObservationMsg(*msg);
+    latest_observation_ = true;
+  };
+  observationSubscriber_ = nodeHandle.create_subscription<ocs2_msgs::msg::MpcObservation>(
+    topicPrefix + "_mpc_observation", 10, observationCallback);
 
-  // // Trajectories publisher
-  // targetTrajectoriesPublisherPtr_.reset(new TargetTrajectoriesRosPublisher(nodeHandle, topicPrefix));
+  // Trajectories publisher
+  targetTrajectoriesPublisherPtr_.reset(new TargetTrajectoriesRosPublisher(nodeHandle, topicPrefix));
 }
 
 /******************************************************************************************************/
@@ -61,28 +64,35 @@ TargetTrajectoriesKeyboardPublisher::TargetTrajectoriesKeyboardPublisher(rclcpp:
 /******************************************************************************************************/
 void TargetTrajectoriesKeyboardPublisher::publishKeyboardCommand(const std::string& commadMsg) 
 {
-  // while (ros::ok() && ros::master::check()) {
-  //   // get command line
-  //   std::cout << commadMsg << ": ";
-  //   const vector_t commandLineInput = getCommandLine().cwiseMin(targetCommandLimits_).cwiseMax(-targetCommandLimits_);
+  rclcpp::WallRate simRate(10);
+  while (rclcpp::ok()) {
+    // get command line
+    std::cout << commadMsg << ": ";
+    const vector_t commandLineInput = getCommandLine().cwiseMin(targetCommandLimits_).cwiseMax(-targetCommandLimits_);
 
-  //   // display
-  //   std::cout << "The following command is published: [" << toDelimitedString(commandLineInput) << "]\n\n";
+    // display
+    std::cout << "The following command is published: [" << toDelimitedString(commandLineInput) << "]\n\n";
 
-  //   // get the latest observation
-  //   ::ros::spinOnce();
-  //   SystemObservation observation;
-  //   {
-  //     std::lock_guard<std::mutex> lock(latestObservationMutex_);
-  //     observation = latestObservation_;
-  //   }
+    if (!latest_observation_) {
+      simRate.sleep();
+    }
 
-  //   // get TargetTrajectories
-  //   const auto targetTrajectories = commandLineToTargetTrajectoriesFun_(commandLineInput, observation);
+    // get the latest observation
+    SystemObservation observation;
+    {
+      std::lock_guard<std::mutex> lock(latestObservationMutex_);
+      observation = latestObservation_;
+    }
 
-  //   // publish TargetTrajectories
-  //   targetTrajectoriesPublisherPtr_->publishTargetTrajectories(targetTrajectories);
-  // }  // end of while loop
+    // get TargetTrajectories
+    const auto targetTrajectories = commandLineToTargetTrajectoriesFun_(commandLineInput, observation);
+
+    // publish TargetTrajectories
+    targetTrajectoriesPublisherPtr_->publishTargetTrajectories(targetTrajectories);
+    latest_observation_ = false;
+
+    simRate.sleep();
+  }  // end of while loop
 }
 
 /******************************************************************************************************/
@@ -91,10 +101,8 @@ void TargetTrajectoriesKeyboardPublisher::publishKeyboardCommand(const std::stri
 vector_t TargetTrajectoriesKeyboardPublisher::getCommandLine() 
 {
   // // get command line as one long string
-  // auto shouldTerminate = []() { return !rclcpp::ok() || !ros::master::check(); };
-  // const std::string line = getCommandLineString(shouldTerminate);
-
-  const std::string line;
+  auto shouldTerminate = []() { return !rclcpp::ok(); };
+  const std::string line = getCommandLineString(shouldTerminate);
 
   // a line to words
   const std::vector<std::string> words = stringToWords(line);

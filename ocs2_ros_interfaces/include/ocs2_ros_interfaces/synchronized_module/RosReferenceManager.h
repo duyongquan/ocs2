@@ -29,6 +29,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
+#include "ocs2_msgs/msg/mode_schedule.hpp"
+#include "ocs2_msgs/msg/mpc_target_trajectories.hpp"
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -51,7 +54,7 @@ class RosReferenceManager final : public ReferenceManagerDecorator {
    * @param [in] referenceManagerPtr: The ReferenceManager which will be decorated with ROS subscribers functionalities.
    * topics to receive user-commanded ModeSchedule and TargetTrajectories respectively.
    */
-  explicit RosReferenceManager(std::string topicPrefix, std::shared_ptr<ReferenceManagerInterface> referenceManagerPtr);
+  explicit RosReferenceManager(rclcpp::Node* node, std::string topicPrefix, std::shared_ptr<ReferenceManagerInterface> referenceManagerPtr);
 
   ~RosReferenceManager() override = default;
 
@@ -76,8 +79,9 @@ class RosReferenceManager final : public ReferenceManagerDecorator {
  private:
   const std::string topicPrefix_;
 
-  // ::ros::Subscriber modeScheduleSubscriber_;
-  // ::ros::Subscriber targetTrajectoriesSubscriber_;
+  rclcpp::Node* node_;
+  rclcpp::Subscription<ocs2_msgs::msg::ModeSchedule>::SharedPtr modeScheduleSubscriber_;
+  rclcpp::Subscription<ocs2_msgs::msg::MpcTargetTrajectories>::SharedPtr targetTrajectoriesSubscriber_;
 };
 
 /******************************************************************************************************/

@@ -94,8 +94,8 @@ public:
     mpc.getSolverPtr()->addSolverObserver(createStateInputBoundsObserver());
 
     // Launch MPC ROS node
-    ocs2::MPC_ROS_Interface mpcNode(mpc, "cartpole");
-    mpcNode.launchNodes(*this);
+    ocs2::MPC_ROS_Interface mpcNode(this, mpc, "cartpole");
+    mpcNode.launchNodes();
   }
 };
 }  // namespace 

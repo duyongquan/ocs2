@@ -47,10 +47,11 @@ SolverObserver::constraint_callback_t createConstraintCallback(rclcpp::Node& nod
     throw std::runtime_error("[createConstraintCallback] For each observing time points, you should provide a unique topic name!");
   }
 
-  // std::vector<::ros::Publisher> constraintPublishers;
-  // for (const auto& name : topicNames) {
-  //   constraintPublishers.push_back(nodeHandle.advertise<ocs2_msgs::constraint>(name, 1, true));
-  // }
+  std::vector<rclcpp::Publisher<ocs2_msgs::msg::Constraint>::SharedPtr> constraintPublishers;
+  for (const auto& name : topicNames) {
+    // constraintPublishers.push_back(nodeHandle.advertise<ocs2_msgs::msg::Constraint>(name, 1, true));
+    constraintPublishers.push_back(nodeHandle.create_publisher<ocs2_msgs::msg::Constraint>(name, 1));
+  }
 
   // note that we need to copy the publishers as the local ones will go out of scope. Good news is that ROS publisher
   // behaves like std::sharted_ptr ("Once all copies of a specific Publisher go out of scope, any subscriber status callbacks
@@ -73,7 +74,7 @@ SolverObserver::constraint_callback_t createConstraintCallback(rclcpp::Node& nod
               throw std::runtime_error("[createConstraintCallback] This CallbackInterpolationStrategy is not implemented!");
           }
         }();
-        // constraintPublishers[i].publish(ros_msg_conversions::createConstraintMsg(t, constraint));
+        constraintPublishers[i]->publish(ros_msg_conversions::createConstraintMsg(t, constraint));
       }
     }
   };
@@ -89,10 +90,10 @@ SolverObserver::lagrangian_callback_t createLagrangianCallback(rclcpp::Node& nod
     throw std::runtime_error("[createLagrangianCallback] For each observing time points, you should provide a unique topic name!");
   }
 
-  // std::vector<::ros::Publisher> metricsPublishers;
-  // for (const auto& name : topicNames) {
-  //   metricsPublishers.push_back(nodeHandle.advertise<ocs2_msgs::lagrangian_metrics>(name, 1, true));
-  // }
+  std::vector<rclcpp::Publisher<ocs2_msgs::msg::LagrangianMetrics>::SharedPtr> metricsPublishers;
+  for (const auto& name : topicNames) {
+    metricsPublishers.push_back(nodeHandle.create_publisher<ocs2_msgs::msg::LagrangianMetrics>(name, 1));
+  }
 
   // note that we need to copy the publishers as the local ones will go out of scope. Good news is that ROS publisher
   // behaves like std::sharted_ptr ("Once all copies of a specific Publisher go out of scope, any subscriber status callbacks
@@ -113,7 +114,7 @@ SolverObserver::lagrangian_callback_t createLagrangianCallback(rclcpp::Node& nod
               throw std::runtime_error("[createLagrangianCallback] This CallbackInterpolationStrategy is not implemented!");
           }
         }();
-        // metricsPublishers[i].publish(ros_msg_conversions::createLagrangianMetricsMsg(t, metrics));
+        metricsPublishers[i]->publish(ros_msg_conversions::createLagrangianMetricsMsg(t, metrics));
       }
     }
   };
@@ -129,10 +130,11 @@ SolverObserver::multiplier_callback_t createMultiplierCallback(rclcpp::Node& nod
     throw std::runtime_error("[createMultiplierCallback] For each observing time points, you should provide a unique topic name!");
   }
 
-  // std::vector<::ros::Publisher> multiplierPublishers;
-  // for (const auto& name : topicNames) {
-  //   multiplierPublishers.push_back(nodeHandle.advertise<ocs2_msgs::multiplier>(name, 1, true));
-  // }
+  std::vector<rclcpp::Publisher<ocs2_msgs::msg::Multiplier>::SharedPtr> multiplierPublishers;
+  for (const auto& name : topicNames) {
+    multiplierPublishers.push_back(nodeHandle.create_publisher<ocs2_msgs::msg::Multiplier>(name, 1));
+  }
+
 
   // note that we need to copy the publishers as the local ones will go out of scope. Good news is that ROS publisher
   // behaves like std::sharted_ptr ("Once all copies of a specific Publisher go out of scope, any subscriber status callbacks
@@ -153,7 +155,7 @@ SolverObserver::multiplier_callback_t createMultiplierCallback(rclcpp::Node& nod
               throw std::runtime_error("[createMultiplierCallback] This CallbackInterpolationStrategy is not implemented!");
           }
         }();
-        // multiplierPublishers[i].publish(ros_msg_conversions::createMultiplierMsg(t, multiplier));
+        multiplierPublishers[i]->publish(ros_msg_conversions::createMultiplierMsg(t, multiplier));
       }
     }
   };

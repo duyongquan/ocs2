@@ -27,14 +27,13 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     # Get the launch directory
-    bringup_dir = get_package_share_directory('ocs2_cartpole_ros')
+    bringup_dir = get_package_share_directory('ocs2_ros_interfaces')
     launch_dir = os.path.join(bringup_dir, 'launch')
 
     # Create the launch configuration variables
     namespace = LaunchConfiguration('namespace')
     use_namespace = LaunchConfiguration('use_namespace')
     use_sim_time = LaunchConfiguration('use_sim_time')
-    params_file = LaunchConfiguration('params_file')
 
     declare_namespace_cmd = DeclareLaunchArgument(
         'namespace',
@@ -51,25 +50,12 @@ def generate_launch_description():
         default_value='false',
         description='Use simulation (Gazebo) clock if true')
 
-    declare_params_file_cmd = DeclareLaunchArgument(
-        'params_file',
-        default_value=os.path.join(bringup_dir, 'params', 'controller_params.yaml'),
-        description='Full path to the ROS2 parameters file to use for all launched nodes')
-
-    urdf = os.path.join(get_package_share_directory('ocs2_robotic_assets'), 'resources', 'cartpole', 'urdf', 'cartpole.urdf')
-
-    with open(urdf, 'r') as infp:
-        robot_description = infp.read()
-
-    # Launch urdf
-    start_robot_state_publisher_cmd = Node(
-        package='robot_state_publisher',
-        executable='robot_state_publisher',
-        name='robot_state_publisher',
-        namespace=namespace,
-        output='screen',
-        parameters=[{'use_sim_time': use_sim_time,
-                     'robot_description': robot_description}])
+    # Launch multiplot
+    multiplot_cmd = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(launch_dir, 'performance_indices.launch.py')),
+        launch_arguments={'namespace': namespace,
+                          'use_namespace': use_namespace}.items())
 
     # Create the launch description and populate
     ld = LaunchDescription()
@@ -78,9 +64,8 @@ def generate_launch_description():
     ld.add_action(declare_namespace_cmd)
     ld.add_action(declare_use_namespace_cmd)
     ld.add_action(declare_use_sim_time_cmd)
-    ld.add_action(declare_params_file_cmd)
 
     # Add the actions to launch all of the navigation nodes
-    ld.add_action(start_robot_state_publisher_cmd)
+    ld.add_action(multiplot_cmd)
 
     return ld

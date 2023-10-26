@@ -81,9 +81,10 @@ class TargetTrajectoriesKeyboardPublisher final {
 
   std::unique_ptr<TargetTrajectoriesRosPublisher> targetTrajectoriesPublisherPtr_;
 
-  // ::ros::Subscriber observationSubscriber_;
+  rclcpp::Subscription<ocs2_msgs::msg::MpcObservation>::SharedPtr observationSubscriber_;
   mutable std::mutex latestObservationMutex_;
   SystemObservation latestObservation_;
+  bool latest_observation_ {false};
 };
 
 }  // namespace ocs2
